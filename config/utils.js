@@ -31,3 +31,32 @@ function merge (a) {
 };
 
 exports.merge = merge;
+
+// error logging with stack trace
+exports.getErrorMessage = function (err) {
+  var message = '';
+
+  console.error('error:', err);
+  console.error(new Error().stack);
+
+  if (err.code) {
+    switch (err.code) {
+      case 11000:
+      case 11001:
+        message = getUniqueErrorMessage(err);
+        break;
+      default:
+        message = 'Something went wrong';
+    }
+  } else if (err.errors) {
+    for (var errName in err.errors) {
+      if (err.errors[errName].message) {
+        message = err.errors[errName].message;
+      }
+    }
+  } else if (err.message) {
+    message = err.message;
+  }
+
+  return message || (err && JSON.stringify(err)) || 'Something went wrong';
+};

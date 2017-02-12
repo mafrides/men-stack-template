@@ -1,5 +1,7 @@
 var path = require('path'),
   fs = require('fs'),
+  config = require(path.resolve('./config/config')),
+  mongoose = require('mongoose'),
   express = require('express'),
   app = express(),
   compress = require('compression'),
@@ -12,9 +14,17 @@ var path = require('path'),
   helmet = require('helmet'),
   session = require('express-session'),
   MongoStore = require('connect-mongo')(session),
-  mongoose = require('mongoose'),
-  config = require(path.resolve('./config/config')),
+  passport = require('passport'),
+  LocalStrategy = require('passport-local').Strategy,
   packageJSON = require(path.resolve('./package'));
+
+// Global variables
+global.config = config;
+
+// Local variables
+app.locals.title = config.app.title;
+app.locals.descriptions = config.app.description;
+app.locals.keywords = config.app.keywords;
 
 // Load Models
 fs.readdirSync(path.join(__dirname, 'app/models')).forEach(function loadModel (file) {
@@ -24,11 +34,6 @@ fs.readdirSync(path.join(__dirname, 'app/models')).forEach(function loadModel (f
 // Connect db
 mongoose.connect(config.db);
 var db = mongoose.connection;
-
-// Local variables
-app.locals.title = config.app.title;
-app.locals.descriptions = config.app.description;
-app.locals.keywords = config.app.keywords;
 
 // Compression (above express static)
 app.use(compress({
@@ -93,10 +98,44 @@ app.use(session({
   })
 }));
 
-// Routes (if ordering is needed, change this to use a master routes file)
-fs.readdirSync(path.join(__dirname, 'app/routes')).forEach(function loadRoutes (file) {
-  require(path.resolve(path.join('./app/routes', file)))(app);
+// Passport
+var UserSchema = require(path.resolve('./app/models/user.model')),
+  User = mongoose.model('User'),
+  ObjectId = mongoose.Types.ObjectId;
+
+passport.serializeUser(function (user, done) {
+  done(null, user._id);
 });
+
+passport.deserializeUser(function (id, done) {
+  User.findOne({ _id: id }).select({ password: false, salt: false }).lean().exec(function (err, user) {
+    if (user) user._id = new ObjectId(user._id);
+    done(err, user);
+  });
+});
+
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+}, function (email, password, done) {
+  User.findOne({ email: email && email.toString().toLowerCase() }).lean().exec(function (err, user) {
+    if (err) return done(err);
+
+    if (!user || !UserSchema.statics.authenticate(password, user.password, user.salt)) {
+      return done(null, false, {
+        message: 'Invalid email or password'
+      });
+    }
+
+    return done(null, user);
+  });
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
+require(path.resolve('./app/routes'))(app);
 
 // Errors
 app.use(function (err, req, res, next) {
