@@ -79,7 +79,7 @@ app.disable('x-powered-by');
 app.use(helmet());
 
 // Static files
-app.use('/', express.static(path.resolve('./public')));
+app.use('/', express.static(path.resolve('./pages/public')));
 
 // Session
 app.use(session({
@@ -138,11 +138,30 @@ app.use(passport.session());
 require(path.resolve('./app/routes'))(app);
 
 // Errors
-app.use(function (err, req, res, next) {
-  if (!err) return next();
-
+app.use(function handle500 (err, req, res, next) {
   console.error(err.stack);
-  res.redirect('/server-error');
+
+  res.status(500).render('app/views/error/500', {
+    error: 'Oops! Something went wrong...'
+  });
+});
+
+app.use(function handle404 (req, res, next) {
+  res.status(404).format({
+    'text/html': function () {
+      res.render('app/views/error/404', {
+        url: req.originalUrl
+      });
+    },
+    'application/json': function () {
+      res.json({
+        error: 'Path not found'
+      });
+    },
+    'default': function () {
+      res.send('Path not found');
+    }
+  });
 });
 
 app.listen(config.port, config.host, function () {
