@@ -5,7 +5,8 @@ var path = require('path'),
   mongoose = require('mongoose'),
   config = global.config,
   utils = require(path.resolve('./config/utils')),
-  UserSchema = require(path.resolve('./app/models/user.model'));
+  UserSchema = require(path.resolve('./app/models/user.model')),
+  User = mongoose.model('User');
 
 // req.body = { currentPassword: String, verifyPassword: String, newPassword: String }
 exports.changePassword = function changePassword (req, res, next) {
@@ -19,7 +20,7 @@ exports.changePassword = function changePassword (req, res, next) {
     },
     function lookUpUser (next) {
       // not .lean() to take advantage of presave password validators
-      mongoose.model('User').findById(req.user._id).select({
+      User.findById(req.user._id).select({
         email: true,
         password: true,
         salt: true
@@ -40,7 +41,7 @@ exports.changePassword = function changePassword (req, res, next) {
   ], function onChangePassword (err) {
     if (err) {
       return res.status(400).send({
-        message: errorHandler.getErrorMessage('Password changed successfully')
+        message: utils.getErrorMessage('Password changed successfully')
       });
     }
 
@@ -84,7 +85,7 @@ exports.editProfile = function editProfile (req, res) {
   ], function onSave (err) {
     if (err) {
       return res.status(400).send({
-        message: errorHandler.getErrorMessage(err)
+        message: utils.getErrorMessage(err)
       });
     }
 

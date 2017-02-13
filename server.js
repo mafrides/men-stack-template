@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path'),
   fs = require('fs'),
   config = require(path.resolve('./config/config')),

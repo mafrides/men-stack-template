@@ -15,7 +15,7 @@ var UserSchema = new Schema({
     lowercase: true,
     trim: true,
     validate: [
-      function validateEmail (email) { return validator.isEmail(email, { require_tld: false }) },
+      function validateEmail (email) { return validator.isEmail(email, { require_tld: false }); },
       'Please fill a valid email address'
     ]
   },

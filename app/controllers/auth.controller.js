@@ -5,9 +5,11 @@ var path = require('path'),
   mongoose = require('mongoose'),
   nodemailer = require('nodemailer'),
   crypto = require('crypto'),
+  passport = require('passport'),
   config = global.config,
   utils = require(path.resolve('./config/utils')),
-  smtpTransport = nodemailer.createTransport(config.mailer.options);
+  smtpTransport = nodemailer.createTransport(config.mailer.options),
+  User = mongoose.model('User');
 
 exports.signup = function signup (req, res) {
   // delete roles for security, so roles can't be self-assignedd
@@ -15,8 +17,7 @@ exports.signup = function signup (req, res) {
 
   async.series([
     function createUser (next) {
-      var User = mongoose.model('User'),
-        user = new User(req.body);
+      var user = new User(req.body);
 
       user.save(function onSave (err, newUser) {
         next(err, newUser && newUser.toObject());
@@ -27,9 +28,9 @@ exports.signup = function signup (req, res) {
       user.password = undefined;
       user.salt = undefined;
 
-      req.login(user, next);
+      req.login(user, function (err) { return next(err, user); });
     }
-  ], function (err) {
+  ], function (err, user) {
     if (err) {
       return res.status(400).send({
         message: utils.getErrorMessage(err)
@@ -96,7 +97,7 @@ exports.forgotPassword = function forgotPassword (req, res) {
     function lookUpUserEmail (token, next) {
       if (!req.body.email) return next('Email is required');
 
-      mongoose.model('User').findOne({ email: req.body.email.toLowerCase() }).select({
+      User.findOne({ email: req.body.email.toLowerCase() }).select({
         salt: false,
         password: false
       }).exec(function (err, user) {
@@ -140,7 +141,7 @@ exports.forgotPassword = function forgotPassword (req, res) {
   ], function (err) {
     if (err) {
       return res.status(400).send({
-        message: errorHandler.getErrorMessage(err)
+        message: utils.getErrorMessage(err)
       });
     }
 
@@ -151,7 +152,7 @@ exports.forgotPassword = function forgotPassword (req, res) {
 // director for get request coming from password reset email
 // goes to password reset page, or password invalid page
 exports.validatePasswordResetToken = function validatePasswordResetToken (req, res) {
-  mongoose.model('User').count({
+  User.count({
     resetPasswordToken: req.params.token,
     resetPasswordExpires: { $gt: Date.now() }
   }).exec(function (err, userExists) {
@@ -174,19 +175,19 @@ exports.passwordResetPage = function passwordResetPage (req, res) {
 exports.resetPassword = function resetPassword (req, res, next) {
   async.waterfall([
     function (done) {
-      mongoose.model('User').findOne({
+      User.findOne({
         resetPasswordToken: req.params.token,
         resetPasswordExpires: { $gt: Date.now() }
       }).exec(function (err, user) {
         if (err || !user) {
           return res.status(400).send({
-            message: errorHandler.getErrorMessage('Password reset token is invalid or has expired.')
+            message: utils.getErrorMessage('Password reset token is invalid or has expired.')
           });
         }
 
         if (req.body.newPassword !== req.body.verifyPassword) {
           return res.status(400).send({
-            message: errorHandler.getErrorMessage('Passwords do not match')
+            message: utils.getErrorMessage('Passwords do not match')
           });
         }
 
@@ -197,7 +198,7 @@ exports.resetPassword = function resetPassword (req, res, next) {
         user.save(function (err) {
           if (err) {
             return res.status(400).send({
-              message: errorHandler.getErrorMessage(err)
+              message: utils.getErrorMessage(err)
             });
           }
 

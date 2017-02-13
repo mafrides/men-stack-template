@@ -4,7 +4,8 @@ var path = require('path'),
   mongoose = require('mongoose'),
   async = require('async'),
   utils = require(path.resolve('./config/utils')),
-  UserSchema = require(path.resolve('./app/models/user.model'));
+  UserSchema = require(path.resolve('./app/models/user.model')),
+  User = mongoose.model('User');
 
 exports.getUser = function getUser (req, res) {
   User.findById(req.params.userId).select({
@@ -62,7 +63,7 @@ exports.updateUser = function updateUser (req, res) {
 };
 
 exports.deleteUser = function deleteUser (req, res) {
-  User.remove({ _id: req.params.userId }, function onRemove (err) {
+  mongoose.model('User').remove({ _id: req.params.userId }, function onRemove (err) {
     if (err) {
       return res.status(400).send({
         message: utils.getErrorMessage(err)
