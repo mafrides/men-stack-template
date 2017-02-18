@@ -42,7 +42,7 @@ exports.signup = function signup (req, res) {
 };
 
 exports.signupPage = function signupPage (req, res) {
-  // TODO
+  res.render(path.resolve('./app/views/auth/signup.view.html'));
 };
 
 exports.signin = function signin (req, res, next) {
@@ -69,7 +69,7 @@ exports.signin = function signin (req, res, next) {
 };
 
 exports.signinPage = function signinPage (req, res) {
-  // TODO
+  res.render(path.resolve('./app/views/auth/signin.view.html'));
 };
 
 exports.signout = function signout (req, res) {
@@ -114,7 +114,7 @@ exports.forgotPassword = function forgotPassword (req, res) {
     function renderProcessingScreen (token, user, next) {
       var transport = config.mailer.secure ? 'https://' : 'http://';
 
-      res.render(path.resolve('app/email-templates/reset-password.email.html'), {
+      res.render(path.resolve('./app/email-templates/reset-password.email.html'), {
         name: user.firstName,
         appName: config.app.title,
         url: [transport + req.headers.host, 'api/auth/reset', token].join('/')
@@ -219,7 +219,7 @@ exports.resetPassword = function resetPassword (req, res, next) {
       });
     },
     function (user, done) {
-      res.render('app/email-templates/reset-password-confirm.email.html', {
+      res.render(path.resolve('./app/email-templates/reset-password-confirm.email.html'), {
         name: user.firstName,
         appName: config.app.title
       }, function (err, emailHTML) {

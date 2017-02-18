@@ -25,7 +25,7 @@ global.config = config;
 
 // Local variables
 app.locals.title = config.app.title;
-app.locals.descriptions = config.app.description;
+app.locals.description = config.app.description;
 app.locals.keywords = config.app.keywords;
 
 // Load Models
@@ -143,7 +143,7 @@ require(path.resolve('./app/routes'))(app);
 app.use(function handle500 (err, req, res, next) {
   console.error(err.stack);
 
-  res.status(500).render('app/views/error/500', {
+  res.status(500).render(path.resolve('./app/views/error/500'), {
     error: 'Oops! Something went wrong...'
   });
 });
@@ -151,7 +151,7 @@ app.use(function handle500 (err, req, res, next) {
 app.use(function handle404 (req, res, next) {
   res.status(404).format({
     'text/html': function () {
-      res.render('app/views/error/404', {
+      res.render(path.resolve('./app/views/error/404.view.html'), {
         url: req.originalUrl
       });
     },
