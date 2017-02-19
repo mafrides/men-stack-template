@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><% include ../partials/internal-page-head.view.html %></head>
+<head>
+  <% include ../partials/internal-page-head.view.html %>
+  <% include ../partials/form-validator-script.html %>
+  <style>
+    input.invalid {
+
+    }
+  </style>
+</head>
 <body>
   <header><% include ../partials/public-header.view.html %></header>
 
   <h1>Signup Page</h1>
 
-  <form id="userForm">
+  <form id="userForm" name="userForm" action="">
   <fieldset>
     <label for="given-name">First Name</label>
     <input type="text" id="given-name" name="given-name" autocomplete="given-name">
@@ -22,6 +30,8 @@
 
     <label for="confirm-password">Confirm Password</label>
     <input type="password" id="confirm-password" name="confirm-password" autocomplete="off" required>
+
+    <input type="submit" id="submit" name="submit" value="Signup">
   </fieldset>
   </form>
 
@@ -30,7 +40,58 @@
 
   (function ($) {
     $(document).ready(function () {
-      // form validation and submit with ajax here
+      var validationRules = {
+        form: { message: 'This form has some invalid fields. Please fix them before re-submitting' },
+        'given-name': {
+          maxLength: { value: 50, message: 'First Name must be under 50 characters.' }
+        },
+        'family-name': {
+          maxLength: { value: 50, message: 'Last Name must be under 50 characters.' }
+        },
+        email: {
+          email: { value: true, message: 'Email field must be a valid email.' },
+          required: { value: true, message: 'Email field is required.' }
+        },
+        'new-password': {
+          minLength: { value: 5, message: 'Password must be at least 5 characters.' },
+          maxLength: { value: 256, message: 'Password must be no more than 256 characters.' },
+          required: { value: true, message: 'Password is required.' }
+        },
+        'confirm-password': {
+          rules: [
+            function customRules (fieldValue, fieldsHash) {
+              return fieldsHash['new-password'].val() === fieldValue || 'Passwords must match';
+            }
+          ]
+        }
+      };
+
+      var $form = $('form[name="userForm"]');
+
+      $form.submit(function onSubmit (e) {
+        e.preventDefault();
+
+        if (!window.validateForm($form, validationRules)) return;
+
+        var $fields = $form.find('input');
+        var fieldMap = {
+          'given-name': 'firstName',
+          'family-name': 'lastName',
+          email: 'email',
+          'new-password': 'newPassword',
+          'confirm-password': 'confirmPassword'
+        };
+        var submission = $fields.toArray().reduce(function buildSumission (acc, field) {
+          var $field = $(field);
+          var submissionFieldName = fieldMap[$field.attr('name')];
+          if (submissionFieldName) acc[submissionFieldName] = $field.val();
+
+          return acc;
+        }, {});
+
+        console.log(submission);
+        // ajax call submit
+      });
     });
   }(jQuery));
   </script>
