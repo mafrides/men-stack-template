@@ -4,7 +4,8 @@ var path = require('path'),
   userController = require(path.resolve('./app/controllers/user.controller'));
 
 function isUser (req, res, next) {
-  return req.user.roles.indexOf('user') !== -1;
+  if (req.user.roles.indexOf('user') === -1) return next('Unauthorized');
+  next();
 }
 
 module.exports = function (app) {

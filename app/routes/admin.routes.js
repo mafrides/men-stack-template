@@ -4,7 +4,8 @@ var path = require('path'),
   adminController = require(path.resolve('./app/controllers/admin.controller'));
 
 function isAdmin (req, res, next) {
-  return req.user.roles.indexOf('admin') !== -1;
+  if (req.user.roles.indexOf('admin') === -1) return next('Unauthorized');
+  next();
 }
 
 module.exports = function (app) {

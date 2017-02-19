@@ -148,7 +148,7 @@ require(path.resolve('./app/routes'))(app);
 app.use(function handle500 (err, req, res, next) {
   console.error(err.stack);
 
-  res.status(500).render(path.resolve('./app/views/error/500'), {
+  res.status(500).render(path.resolve('./app/views/error/500.view.html'), {
     error: 'Oops! Something went wrong...'
   });
 });
