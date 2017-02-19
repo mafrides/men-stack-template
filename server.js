@@ -136,6 +136,11 @@ passport.use(new LocalStrategy({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(function addLoggedInTokenToViews (req, res, next) {
+  res.locals.loggedIn = !!req.user;
+  next();
+});
+
 // Routes
 require(path.resolve('./app/routes'))(app);
 

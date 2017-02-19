@@ -41,10 +41,6 @@ exports.signup = function signup (req, res) {
   });
 };
 
-exports.signupPage = function signupPage (req, res) {
-  res.render(path.resolve('./app/views/auth/signup.view.html'));
-};
-
 exports.signin = function signin (req, res, next) {
   passport.authenticate('local', function (err, user, info) {
     async.series([
@@ -66,10 +62,6 @@ exports.signin = function signin (req, res, next) {
       res.json(user);
     });
   })(req, res, next);
-};
-
-exports.signinPage = function signinPage (req, res) {
-  res.render(path.resolve('./app/views/auth/signin.view.html'));
 };
 
 exports.signout = function signout (req, res) {
@@ -162,14 +154,6 @@ exports.validatePasswordResetToken = function validatePasswordResetToken (req, r
   });
 };
 
-exports.passwordResetInvalidPage = function passwordResetInvalidPage (req, res) {
-  // TODO
-};
-
-exports.passwordResetPage = function passwordResetPage (req, res) {
-  // TODO
-};
-
 // Reset password api POST route
 // @params req.body { newPassword: String, verifyPassword: String }
 exports.resetPassword = function resetPassword (req, res, next) {
@@ -245,4 +229,20 @@ exports.resetPassword = function resetPassword (req, res, next) {
   ], function (err) {
     if (err) return next(err);
   });
+};
+
+exports.signupPage = function signupPage (req, res) {
+  res.render(path.resolve('./app/views/auth/signup.view.html'));
+};
+
+exports.signinPage = function signinPage (req, res) {
+  res.render(path.resolve('./app/views/auth/signin.view.html'));
+};
+
+exports.passwordResetInvalidPage = function passwordResetInvalidPage (req, res) {
+  res.render(path.resolve('./app/views/auth/password-reset-invalid.view.html'));
+};
+
+exports.passwordResetPage = function passwordResetPage (req, res) {
+  res.render(path.resolve('./app/views/auth/password-reset.view.html'));
 };

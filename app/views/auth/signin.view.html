@@ -5,5 +5,25 @@
   <header><% include ../partials/public-header.view.html %></header>
 
   <h1>Signin page</h1>
+
+  <form id="userForm">
+  <fieldset>
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" autocomplete="home email" required>
+
+    <label for="current-password">Password</label>
+    <input type="password" id="current-password" name="current-password" autocomplete="current-password" required>
+  </fieldset>
+  </form>
+
+  <script>
+  "use strict";
+
+  (function ($) {
+    $(document).ready(function () {
+      // form validation and submit with ajax here
+    });
+  }(jQuery));
+  </script>
 </body>
 </html>

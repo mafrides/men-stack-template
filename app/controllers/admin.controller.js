@@ -114,3 +114,19 @@ exports.changeUserPassword = function changeUserPassword (req, res) {
     res.send('Password changed successfully');
   });
 };
+
+exports.listUsersPage = function listUsersPage (req, res) {
+
+};
+
+exports.createUserPage = function createUserPage (req, res) {
+
+};
+
+exports.viewUserPage = function viewUserPage (req, res) {
+
+};
+
+exports.editUserPage = function editUserPage (req, res) {
+
+};

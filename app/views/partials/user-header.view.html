@@ -1,1 +1,27 @@
 <h1>User Page Test Header</h1>
+
+<h2>User Navbar Stub</h2>
+<ul>
+  <li class="logged-in"><a href="users/edit-profile">Edit Profile</a></li>
+  <li class="logged-in"><a href="users/change-password">Change Password</a></li>
+  <li class="not-logged-in"><a href="auth/signup">Sign Up</a></li>
+  <li class="not-logged-in"><a href="auth/signin">Sign In</a></li>
+  <li class="logged-in"><a href="/api/auth/signout">Sign Out</a></li>
+</ul>
+
+<style>
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+"use strict";
+
+(function ($) {
+  $(document).ready(function () {
+    var loggedIn = <%= loggedIn %> === 'true';
+    $(loggedIn ? '.not-logged-in' : '.logged-in').addClass('hidden');
+  });
+}(jQuery));
+</script>

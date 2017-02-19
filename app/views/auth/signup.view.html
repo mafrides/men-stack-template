@@ -5,5 +5,34 @@
   <header><% include ../partials/public-header.view.html %></header>
 
   <h1>Signup Page</h1>
+
+  <form id="userForm">
+  <fieldset>
+    <label for="given-name">First Name</label>
+    <input type="text" id="given-name" name="given-name" autocomplete="given-name">
+
+    <label for="family-name">Last Name</label>
+    <input type="text" id="family-name" name="family-name" autocomplete="family-name">
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" autocomplete="home email" required>
+
+    <label for="new-password">Password</label>
+    <input type="password" id="new-password" name="new-password" autocomplete="off" required>
+
+    <label for="confirm-password">Confirm Password</label>
+    <input type="password" id="confirm-password" name="confirm-password" autocomplete="off" required>
+  </fieldset>
+  </form>
+
+  <script>
+  "use strict";
+
+  (function ($) {
+    $(document).ready(function () {
+      // form validation and submit with ajax here
+    });
+  }(jQuery));
+  </script>
 </body>
 </html>

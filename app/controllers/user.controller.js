@@ -103,3 +103,11 @@ exports.me = function me (req, res) {
     email: user.email
   });
 };
+
+exports.editProfilePage = function editProfilePage (req, res) {
+  res.render(path.resolve('./app/views/user/edit-profile.view.html'));
+};
+
+exports.changePasswordPage = function changePasswordPage (req, res) {
+  res.render(path.resolve('./app/views/user/change-password.view.html'));
+};
