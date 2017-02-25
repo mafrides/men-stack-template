@@ -65,7 +65,7 @@
           Form.setFormFields($form, fieldNameMap, data);
         })
         .fail(function onError (xhr, status, err) {
-          Form.insertFormError($form, status);
+          Form.insertFormError($form, err);
         });
 
       $form.submit(function onSubmit (e) {
@@ -81,7 +81,7 @@
             window.location.replace('/dashboard');
           },
           error: function onError (xhr, status, err) {
-            Form.insertFormError($form, status);
+            Form.insertFormError($form, err);
           }
         });
       });

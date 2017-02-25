@@ -18,7 +18,88 @@
 <body>
   <header><% include ../../partials/admin-header.view.html %></header>
 
-  <h1>A brand new admin page!</h1>
+  <h1 id="user-header"></h1>
+
+  <nav>
+    <a id="back-link">Back</a>
+  </nav>
+
+  <form id="userForm" name="userForm" action="">
+  <fieldset>
+    <label for="given-name">First Name</label>
+    <input type="text" id="given-name" name="given-name" autocomplete="off">
+
+    <label for="family-name">Last Name</label>
+    <input type="text" id="family-name" name="family-name" autocomplete="off">
+
+    <label for="roles">Roles</label>
+    <input type="text" id="roles" name="roles" autocomplete="off">
+
+    <input type="submit" id="submit" name="submit" value="Update">
+  </fieldset>
+  </form>
+
+  <script>
+  "use strict";
+
+  (function ($, Form) {
+    $(document).ready(function ($) {
+      var $form = $('form[name="userForm"]');
+      var fieldNameMap = {
+        'given-name': 'firstName',
+        'family-name': 'lastName',
+        email: 'email',
+        roles: 'roles'
+      };
+      var validationRules = {
+        form: { message: 'This form has some invalid fields. Please fix them before re-submitting' },
+        'given-name': {
+          maxLength: { value: 50, message: 'First Name must be under 50 characters.' }
+        },
+        'family-name': {
+          maxLength: { value: 50, message: 'Last Name must be under 50 characters.' }
+        }
+      };
+      var originalUser;
+
+      $.get('api/users/' + window.location.pathname.split('/').slice(-2, -1)[0])
+        .done(function onSuccess (user) {
+          originalUser = user;
+
+          $('#user-header').text(user.email);
+          $('#back-link').attr('href', 'admin/users/' + user._id + '/view');
+
+          user.roles = user.roles.join(', ');
+          Form.setFormFields($form, fieldNameMap, user)
+        })
+        .fail(function onError (xhr, status, err) {
+          Form.insertFormError($form, err);
+        });
+
+      $form.submit(function onSubmit (e) {
+        e.preventDefault();
+
+        if (!Form.validateForm($form, validationRules)) return;
+
+        var data = Form.getFormFields($form, fieldNameMap);
+        data.roles = (data.roles || '').split(',').map(function trim (role) {
+          return role.toString().trim();
+        });
+
+        $.ajax({
+          url: 'api/users/' + originalUser._id,
+          type: 'PUT',
+          data: data,
+          success: function onSuccess (data) {
+            window.location.replace('/admin/users/' + originalUser._id + '/view');
+          },
+          error: function onError (xhr, status, err) {
+            Form.insertFormError($form, err);
+          }
+        });
+      });
+    });
+  }(jQuery, window.Form));
+  </script>
 </body>
 </html>
-

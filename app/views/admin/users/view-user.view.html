@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <% include ../../partials/internal-page-head.view.html %>
-  <% include ../../partials/form-helpers.html %>
   <style>
     p.error {
 
@@ -18,7 +17,53 @@
 <body>
   <header><% include ../../partials/admin-header.view.html %></header>
 
-  <h1>A brand new admin page!</h1>
+  <nav>
+    <a id="edit-link">Edit</a>
+    <a href="admin/users">Back</a>
+    <a id="delete-link" href="">Delete</a>
+  </nav>
+
+  <article>
+    <h1 id="user-header"></h1>
+    <p><span>First Name</span><span data-field="firstName" class="data"></span></p>
+    <p><span>Last Name</span><span data-field="lastName" class="data"></span></p>
+    <p><span>Email</span><span data-field="email" class="data"></span></p>
+    <p><span>Roles</span><span data-field="roles" class="data"></span></p>
+  </article>
+
+  <script>
+  "use strict";
+
+  (function ($) {
+    $(document).ready(function ($) {
+      $.get('api/users/' + window.location.pathname.split('/').slice(-2, -1)[0])
+        .done(function onSuccess (user) {
+          $('#edit-link').attr('href', 'admin/users/' + user._id + '/edit');
+          $('#delete-link').click(function deleteUser () {
+            $.ajax({
+              url: 'api/users/' + user._id,
+              type: 'DELETE',
+              success: function onSuccess () {
+                window.location.replace('/admin/users');
+              },
+              error: function onError (xhr, status, err) {
+                $('body').append($('<p/>').attr('class', 'error form-error').text(err));
+              }
+            })
+          });
+          $('#user-header').text(user.email);
+
+          $('.data').toArray().forEach(function (element) {
+            var $element = $(element);
+            var field = $element.attr('data-field');
+            $element.text(user[field]);
+          });
+        })
+        .fail(function onError (xhr, status, err) {
+          $('body').append($('<p/>').attr('class', 'error form-error').text(err));
+        });
+    });
+  }(jQuery));
+  </script>
 </body>
 </html>
-

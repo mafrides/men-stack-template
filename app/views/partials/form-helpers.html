@@ -26,11 +26,7 @@
     },
 
     insertFormError: function insertFormError ($form, errorString) {
-      $form.find('input[name="submit"]').after([
-        '<p class="error form-error">',
-        errorString,
-        '</p>'
-      ].join(''));
+      $form.find('input[name="submit"]').after($('<p/>').attr('class', 'error form-error').text(errorString));
     },
 
     validateForm: function validateForm ($form, validationRules) {
@@ -113,11 +109,10 @@
 
       // add form-level error messages
       if (!valid) {
-        $form.find('input[name="submit"]').after([
-          '<p class="error form-error">',
-          (validationRules.form && validationRules.form.message || 'This form has some invalid fields. Please fix them before re-submitting'),
-          '</p>'
-        ].join(''));
+        $form.find('input[name="submit"]').after($('<p/>').attr('class', 'error form-error').text(
+          validationRules.form && validationRules.form.message ||
+          'This form has some invalid fields. Please fix them before re-submitting'
+        ));
       }
 
       return valid;

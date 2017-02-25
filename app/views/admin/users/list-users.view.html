@@ -34,21 +34,16 @@
         .done(function onSuccess (data) {
           var users = data.sort(function byEmail (a, b) {
               return a.email < b.email ? -1 : a.email > b.email ? 1 : 0;
-            }).reduce(function addLink (acc, user) {
-              acc.push(
-                '<li><a href="/admin/users/',
-                user._id,
-                '"><h3>',
-                user.email,
-                '</h3><p>',
-
-              );
-              return acc;
-            }, []);
-          $userList.append(users);
+            }).forEach(function addLink (user) {
+              $userList
+                .append($('<li/>')
+                  .append($('<a/>').attr('href', '/admin/users/' + user._id + '/view')
+                    .append($('<h3/>').text(user.email))
+                    .append($('<p/>').text(user.firstName + ' ' + user.lastName))));
+            });
         })
         .fail(function onError (xhr, status, err) {
-
+          $userList.after($('<p/>').attr('class', 'error form-error').text(err));
         });
     });
   }(jQuery));
