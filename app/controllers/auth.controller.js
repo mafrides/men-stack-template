@@ -109,7 +109,7 @@ exports.forgotPassword = function forgotPassword (req, res) {
         });
       });
     },
-    function renderProcessingScreen (token, user, next) {
+    function renderEmail (token, user, next) {
       var transport = config.mailer.secure ? 'https://' : 'http://';
 
       res.render(path.resolve('./app/email-templates/reset-password.email.html'), {
@@ -243,6 +243,10 @@ exports.signupPage = function signupPage (req, res) {
 
 exports.signinPage = function signinPage (req, res) {
   res.render(path.resolve('./app/views/auth/signin.view.html'));
+};
+
+exports.forgotPasswordPage = function forgotPasswordPage (req, res) {
+  res.render(path.resolve('./app/views/auth/forgot-password.view.html'));
 };
 
 exports.passwordResetInvalidPage = function passwordResetInvalidPage (req, res) {

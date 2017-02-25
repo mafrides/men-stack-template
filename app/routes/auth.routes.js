@@ -13,6 +13,7 @@ module.exports = function (app) {
 
   app.route('/auth/signup').get(authController.signupPage);
   app.route('/auth/signin').get(authController.signinPage);
+  app.route('/auth/password/forgot').get(authController.forgotPasswordPage);
   app.route('/auth/password/reset/invalid').get(authController.passwordResetInvalidPage);
   app.route('/auth/password/reset/:token').get(authController.passwordResetPage);
 };
