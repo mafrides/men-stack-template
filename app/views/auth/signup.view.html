@@ -86,7 +86,7 @@
 
         $.post('api/auth/signup', Form.getFormFields($form, fieldNameMap))
           .done(function onSuccess (data) {
-            window.location.replace('/');
+            window.location.replace('/dashboard');
           }).fail(function onError (xhr, status, err) {
             Form.insertFormError($form, status);
           });

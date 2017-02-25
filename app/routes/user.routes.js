@@ -15,4 +15,5 @@ module.exports = function (app) {
 
   app.route('/users/edit-profile').get(isUser, userController.editProfilePage);
   app.route('/users/change-password').get(isUser, userController.changePasswordPage);
+  app.route('/dashboard').get(isUser, userController.dashboardPage);
 };

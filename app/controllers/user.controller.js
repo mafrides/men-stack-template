@@ -41,7 +41,7 @@ exports.changePassword = function changePassword (req, res, next) {
   ], function onChangePassword (err) {
     if (err) {
       return res.status(400).send({
-        message: utils.getErrorMessage('Password changed successfully')
+        message: utils.getErrorMessage(err)
       });
     }
 
@@ -110,4 +110,8 @@ exports.editProfilePage = function editProfilePage (req, res) {
 
 exports.changePasswordPage = function changePasswordPage (req, res) {
   res.render(path.resolve('./app/views/user/change-password.view.html'));
+};
+
+exports.dashboardPage = function dashboardPage (req, res) {
+  res.render(path.resolve('./app/views/user/dashboard.view.html'));
 };

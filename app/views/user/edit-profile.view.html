@@ -78,7 +78,7 @@
           type: 'PUT',
           data: Form.getFormFields($form, fieldNameMap),
           success: function onSuccess (data) {
-            window.location.replace('/');
+            window.location.replace('/dashboard');
           },
           error: function onError (xhr, status, err) {
             Form.insertFormError($form, status);
