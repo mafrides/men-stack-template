@@ -38,8 +38,8 @@
   <script>
   "use strict";
 
-  (function ($) {
-    $(document).ready(function () {
+  (function ($, Form) {
+    $(document).ready(function ($) {
       var $form = $('form[name="userForm"]');
       var fieldNameMap = {
         'given-name': 'firstName',
@@ -86,7 +86,7 @@
         });
       });
     });
-  }(jQuery));
+  }(jQuery, window.Form));
   </script>
 </body>
 </html>

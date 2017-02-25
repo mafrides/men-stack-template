@@ -44,7 +44,7 @@
   <script>
   "use strict";
 
-  (function ($) {
+  (function ($, Form) {
     $(document).ready(function () {
       var $form = $('form[name="userForm"]');
       var fieldNameMap = {
@@ -92,7 +92,7 @@
           });
       });
     });
-  }(jQuery));
+  }(jQuery, window.Form));
   </script>
 </body>
 </html>

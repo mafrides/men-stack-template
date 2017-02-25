@@ -1,9 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><% include ../partials/internal-page-head.view.html %></head>
-<body>
-  <header><% include ../partials/admin-header.view.html %></header>
+<head>
+  <% include ../../partials/internal-page-head.view.html %>
+  <style>
+    p.error {
 
-  <h1>View Users</h1>
+    }
+    p.field-error {
+
+    }
+    p.form-error {
+
+    }
+  </style>
+</head>
+<body>
+  <header><% include ../../partials/admin-header.view.html %></header>
+
+  <h1>Users</h1>
+
+  <ul class="user-list">
+
+  </ul>
+
+  <script>
+  "use strict";
+
+  (function ($) {
+    $(document).ready(function ($) {
+      var $userList = $('.user-list');
+
+      $.get('api/users')
+        .done(function onSuccess (data) {
+          var users = data.sort(function byEmail (a, b) {
+              return a.email < b.email ? -1 : a.email > b.email ? 1 : 0;
+            }).reduce(function addLink (acc, user) {
+              acc.push(
+                '<li><a href="/admin/users/',
+                user._id,
+                '"><h3>',
+                user.email,
+                '</h3><p>',
+
+              );
+              return acc;
+            }, []);
+          $userList.append(users);
+        })
+        .fail(function onError (xhr, status, err) {
+
+        });
+    });
+  }(jQuery));
+  </script>
 </body>
 </html>
+

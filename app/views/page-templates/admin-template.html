@@ -1,9 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><% include ../partials/internal-page-head.view.html %></head>
+<head>
+  <% include ../partials/internal-page-head.view.html %>
+  <% include ../partials/form-helpers.html %>
+  <style>
+    p.error {
+
+    }
+    p.field-error {
+
+    }
+    p.form-error {
+
+    }
+  </style>
+</head>
 <body>
   <header><% include ../partials/admin-header.view.html %></header>
 
-  <!-- your page here -->
+  <h1>A brand new admin page!</h1>
 </body>
 </html>
+

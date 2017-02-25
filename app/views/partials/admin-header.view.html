@@ -2,5 +2,30 @@
 
 <h2>Admin Navbar Stub</h2>
 <ul>
+  <li><a href="admin/dashboard">Dashboard</a></li>
   <li><a href="admin/users">User Admin</a></li>
 </ul>
+
+<style>
+  .hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+"use strict";
+
+(function ($) {
+  $(document).ready(function ($) {
+    var relativePath = window.location.pathname.slice(1);
+
+    $('a').toArray().forEach(function (a) {
+      var $a = $(a);
+      if ($a.attr('href') === relativePath) {
+        $a.parent().addClass('hidden');
+      }
+    });
+  });
+}(jQuery));
+</script>
+

@@ -113,5 +113,6 @@ exports.changePasswordPage = function changePasswordPage (req, res) {
 };
 
 exports.dashboardPage = function dashboardPage (req, res) {
+  if (req.user.roles.indexOf('admin') !== -1) res.redirect('/admin/dashboard');
   res.render(path.resolve('./app/views/user/dashboard.view.html'));
 };

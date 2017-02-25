@@ -115,18 +115,19 @@ exports.changeUserPassword = function changeUserPassword (req, res) {
   });
 };
 
-exports.listUsersPage = function listUsersPage (req, res) {
-
+exports.adminDashboardPage = function adminDashboardPage (req, res) {
+  console.log('Serving admin dashboard');
+  res.render(path.resolve('./app/views/admin/dashboard.view.html'));
 };
 
-exports.createUserPage = function createUserPage (req, res) {
-
+exports.listUsersPage = function listUsersPage (req, res) {
+  res.render(path.resolve('./app/views/admin/users/list-users.view.html'));
 };
 
 exports.viewUserPage = function viewUserPage (req, res) {
-
+  res.render(path.resolve('./app/views/admin/users/view-user.view.html'));
 };
 
 exports.editUserPage = function editUserPage (req, res) {
-
+  res.render(path.resolve('./app/views/admin/users/edit-user.view.html'));
 };
