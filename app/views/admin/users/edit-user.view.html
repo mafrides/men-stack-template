@@ -22,6 +22,7 @@
 
   <nav>
     <a id="back-link">Back</a>
+    <a id="change-password-link">Change Password</a>
   </nav>
 
   <form id="userForm" name="userForm" action="">
@@ -68,6 +69,23 @@
 
           $('#user-header').text(user.email);
           $('#back-link').attr('href', 'admin/users/' + user._id + '/view');
+          $('#change-password-link').click(function changeUserPassword () {
+            if (!window.confirm('Change User Password?')) return;
+
+            var newPassword = window.prompt('Enter new password');
+
+            $.ajax({
+              url: '/api/users/' + user._id + '/changePassword',
+              type: 'PUT',
+              data: { newPassword: newPassword },
+              success: function onSuccess () {
+                window.alert('Password has been changed.');
+              },
+              error: function onError (xhr, status, err) {
+                Form.insertFormError($form, err);
+              }
+            });
+          });
 
           user.roles = user.roles.join(', ');
           Form.setFormFields($form, fieldNameMap, user)
