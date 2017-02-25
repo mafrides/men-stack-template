@@ -1,9 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><% include app/views/partials/internal-page-head.view.html %></head>
+<head>
+  <% include ../partials/internal-page-head.view.html %>
+  <% include ../partials/form-validator-script.html %>
+  <style>
+    p.error {
+
+    }
+    p.field-error {
+
+    }
+    p.form-error {
+
+    }
+  </style>
+</head>
 <body>
-  <header><% include app/view/partials/user-header.view.html %></header>
+  <header><% include ../partials/user-header.view.html %></header>
 
   <h1>Edit Profile Page</h1>
+
+  <form id="userForm" name="userForm" action="">
+  <fieldset>
+    <label for="given-name">First Name</label>
+    <input type="text" id="given-name" name="given-name" autocomplete="given-name">
+
+    <label for="family-name">Last Name</label>
+    <input type="text" id="family-name" name="family-name" autocomplete="family-name">
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" autocomplete="home email" required>
+
+    <input type="submit" id="submit" name="submit" value="Update">
+  </fieldset>
+  </form>
+
+  <script>
+  "use strict";
+
+  (function ($) {
+    $(document).ready(function () {
+      var $form = $('form[name="userForm"]');
+      var $fields = $form.find('input');
+      var fieldMap = {
+        'given-name': 'firstName',
+        'family-name': 'lastName',
+        email: 'email'
+      };
+
+      $.get('api/users/me')
+        .done(function onSuccess (data) {
+          $fields.toArray().forEach(function (field) {
+            var $field = $(field);
+            var value = data[fieldMap[$field.attr('name')]];
+            if (value) $field.val(value);
+          });
+        })
+        .fail(function onError (xhr, status, err) {
+          $form.find('input[name="submit"]').after([
+            '<p class="error form-error">',
+            status,
+            '</p>'
+          ].join(''));
+        });
+
+      var validationRules = {
+        form: { message: 'This form has some invalid fields. Please fix them before re-submitting' },
+        'given-name': {
+          maxLength: { value: 50, message: 'First Name must be under 50 characters.' }
+        },
+        'family-name': {
+          maxLength: { value: 50, message: 'Last Name must be under 50 characters.' }
+        },
+        email: {
+          email: { value: true, message: 'Email field must be a valid email.' },
+          required: { value: true, message: 'Email field is required.' }
+        }
+      };
+
+      $form.submit(function onSubmit (e) {
+        e.preventDefault();
+
+        if (!window.validateForm($form, validationRules)) return;
+
+        var submission = $fields.toArray().reduce(function buildSumission (acc, field) {
+          var $field = $(field);
+          var submissionFieldName = fieldMap[$field.attr('name')];
+          if (submissionFieldName) acc[submissionFieldName] = $field.val();
+
+          return acc;
+        }, {});
+
+        $.ajax({
+          url: '/api/users',
+          type: 'PUT',
+          data: submission,
+          success: function onSuccess (data) {
+            window.location.replace('/');
+          },
+          error: function onError (xhr, status, err) {
+            $form.find('input[name="submit"]').after([
+              '<p class="error form-error">',
+              status,
+              '</p>'
+            ].join(''));
+          }
+        });
+      });
+    });
+  }(jQuery));
+  </script>
 </body>
 </html>
+

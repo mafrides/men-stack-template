@@ -65,7 +65,7 @@ exports.editProfile = function editProfile (req, res) {
         'lastName',
       ].reduce(function updateParam (acc, param) {
         if (req.body[param] || req.body[param] === 0) {
-          acc.$set[param] = req.body.param;
+          acc.$set[param] = req.body[param];
         } else {
           acc.$unset[param] = true;
         }

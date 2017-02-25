@@ -22,6 +22,15 @@
   $(document).ready(function () {
     var loggedIn = '<%= loggedIn %>' === 'true';
     $(loggedIn ? '.not-logged-in' : '.logged-in').addClass('hidden');
+
+    var relativePath = window.location.pathname.slice(1);
+
+    $('a').toArray().forEach(function (a) {
+      var $a = $(a);
+      if ($a.attr('href') === relativePath) {
+        $a.parent().addClass('hidden');
+      }
+    });
   });
 }(jQuery));
 </script>
