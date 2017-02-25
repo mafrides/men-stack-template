@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <% include ../partials/internal-page-head.view.html %>
-  <% include ../partials/form-validator-script.html %>
+  <% include ../partials/form-helpers.html %>
   <style>
     p.error {
 
@@ -37,6 +37,11 @@
 
   (function ($) {
     $(document).ready(function () {
+      var $form = $('form[name="userForm"]');
+      var fieldNameMap = {
+        email: 'email',
+        'current-password': 'password'
+      };
       var validationRules = {
         form: { message: 'This form has some invalid fields. Please fix them before re-submitting' },
         email: {
@@ -48,35 +53,17 @@
         }
       };
 
-      var $form = $('form[name="userForm"]');
 
       $form.submit(function onSubmit (e) {
         e.preventDefault();
 
-        if (!window.validateForm($form, validationRules)) return;
+        if (!Form.validateForm($form, validationRules)) return;
 
-        var $fields = $form.find('input');
-        var fieldMap = {
-          email: 'email',
-          'current-password': 'password'
-        };
-        var submission = $fields.toArray().reduce(function buildSubmission (acc, field) {
-          var $field = $(field);
-          var submissionFieldName = fieldMap[$field.attr('name')];
-          if (submissionFieldName) acc[submissionFieldName] = $field.val();
-
-          return acc;
-        }, {});
-
-        $.post('api/auth/signin', submission)
+        $.post('api/auth/signin', Form.getFormFields($form, fieldNameMap))
           .done(function onSuccess (data) {
             window.location.replace('/');
           }).fail(function onError (xhr, status, err) {
-            $form.find('input[name="submit"]').after([
-              '<p class="error form-error">',
-              status,
-              '</p>'
-            ].join(''));
+            Form.insertFormError($form, status);
           });
       });
     });

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <% include ../partials/internal-page-head.view.html %>
-  <% include ../partials/form-validator-script.html %>
+  <% include ../partials/form-helpers.html %>
   <style>
     p.error {
 
@@ -41,29 +41,11 @@
   (function ($) {
     $(document).ready(function () {
       var $form = $('form[name="userForm"]');
-      var $fields = $form.find('input');
-      var fieldMap = {
+      var fieldNameMap = {
         'given-name': 'firstName',
         'family-name': 'lastName',
         email: 'email'
       };
-
-      $.get('api/users/me')
-        .done(function onSuccess (data) {
-          $fields.toArray().forEach(function (field) {
-            var $field = $(field);
-            var value = data[fieldMap[$field.attr('name')]];
-            if (value) $field.val(value);
-          });
-        })
-        .fail(function onError (xhr, status, err) {
-          $form.find('input[name="submit"]').after([
-            '<p class="error form-error">',
-            status,
-            '</p>'
-          ].join(''));
-        });
-
       var validationRules = {
         form: { message: 'This form has some invalid fields. Please fix them before re-submitting' },
         'given-name': {
@@ -78,32 +60,28 @@
         }
       };
 
+      $.get('api/users/me')
+        .done(function onSuccess (data) {
+          Form.setFormFields($form, fieldNameMap, data);
+        })
+        .fail(function onError (xhr, status, err) {
+          Form.insertFormError($form, status);
+        });
+
       $form.submit(function onSubmit (e) {
         e.preventDefault();
 
-        if (!window.validateForm($form, validationRules)) return;
-
-        var submission = $fields.toArray().reduce(function buildSumission (acc, field) {
-          var $field = $(field);
-          var submissionFieldName = fieldMap[$field.attr('name')];
-          if (submissionFieldName) acc[submissionFieldName] = $field.val();
-
-          return acc;
-        }, {});
+        if (!Form.validateForm($form, validationRules)) return;
 
         $.ajax({
-          url: '/api/users',
+          url: 'api/users',
           type: 'PUT',
-          data: submission,
+          data: Form.getFormFields($form, fieldNameMap),
           success: function onSuccess (data) {
             window.location.replace('/');
           },
           error: function onError (xhr, status, err) {
-            $form.find('input[name="submit"]').after([
-              '<p class="error form-error">',
-              status,
-              '</p>'
-            ].join(''));
+            Form.insertFormError($form, status);
           }
         });
       });
