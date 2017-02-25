@@ -4,7 +4,13 @@
   <% include ../partials/internal-page-head.view.html %>
   <% include ../partials/form-validator-script.html %>
   <style>
-    input.invalid {
+    p.error {
+
+    }
+    p.field-error {
+
+    }
+    p.form-error {
 
     }
   </style>
@@ -78,8 +84,7 @@
           'given-name': 'firstName',
           'family-name': 'lastName',
           email: 'email',
-          'new-password': 'newPassword',
-          'confirm-password': 'confirmPassword'
+          'new-password': 'password'
         };
         var submission = $fields.toArray().reduce(function buildSumission (acc, field) {
           var $field = $(field);
@@ -89,8 +94,16 @@
           return acc;
         }, {});
 
-        console.log(submission);
-        // ajax call submit
+        $.post('api/auth/signup', submission)
+          .done(function onSuccess (data) {
+            window.location.replace('/');
+          }).fail(function onError (xhr, status, err) {
+            $form.find('input[name="submit"]').after([
+              '<p class="error form-error">',
+              status,
+              '</p>'
+            ].join(''));
+          });
       });
     });
   }(jQuery));

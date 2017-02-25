@@ -20,7 +20,7 @@
 
 (function ($) {
   $(document).ready(function () {
-    var loggedIn = <%= loggedIn %> === 'true';
+    var loggedIn = '<%= loggedIn %>' === 'true';
     $(loggedIn ? '.not-logged-in' : '.logged-in').addClass('hidden');
   });
 }(jQuery));

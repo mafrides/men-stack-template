@@ -15,12 +15,18 @@ exports.signup = function signup (req, res) {
   // delete roles for security, so roles can't be self-assignedd
   if (req.body.roles) delete req.body.roles;
 
-  async.series([
+  async.waterfall([
+    function validateParams (next) {
+      if (!req.body.email) return next('Email required');
+      if (!req.body.password) return next('Password required');
+
+      next();
+    },
     function createUser (next) {
       var user = new User(req.body);
 
       user.save(function onSave (err, newUser) {
-        next(err, newUser && newUser.toObject());
+        next(err, newUser);
       });
     },
     function login (user, next) {

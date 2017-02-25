@@ -1,18 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><% include ../partials/internal-page-head.view.html %></head>
+<head>
+  <% include ../partials/internal-page-head.view.html %>
+  <% include ../partials/form-validator-script.html %>
+  <style>
+    p.error {
+
+    }
+    p.field-error {
+
+    }
+    p.form-error {
+
+    }
+  </style>
+</head>
 <body>
   <header><% include ../partials/public-header.view.html %></header>
 
   <h1>Signin page</h1>
 
-  <form id="userForm">
+  <form id="userForm" name="userForm" action="">
   <fieldset>
     <label for="email">Email</label>
     <input type="email" id="email" name="email" autocomplete="home email" required>
 
     <label for="current-password">Password</label>
     <input type="password" id="current-password" name="current-password" autocomplete="current-password" required>
+
+    <input type="submit" id="submit" name="submit" value="Signin">
   </fieldset>
   </form>
 
@@ -21,7 +37,48 @@
 
   (function ($) {
     $(document).ready(function () {
-      // form validation and submit with ajax here
+      var validationRules = {
+        form: { message: 'This form has some invalid fields. Please fix them before re-submitting' },
+        email: {
+          email: { value: true, message: 'Email field must be a valid email.' },
+          required: { value: true, message: 'Email field is required.' }
+        },
+        'current-password': {
+          required: { value: true, message: 'Password is required.' }
+        }
+      };
+
+      var $form = $('form[name="userForm"]');
+
+      $form.submit(function onSubmit (e) {
+        e.preventDefault();
+
+        if (!window.validateForm($form, validationRules)) return;
+
+        var $fields = $form.find('input');
+        var fieldMap = {
+          email: 'email',
+          'current-password': 'password'
+        };
+        var submission = $fields.toArray().reduce(function buildSubmission (acc, field) {
+          var $field = $(field);
+          var submissionFieldName = fieldMap[$field.attr('name')];
+          if (submissionFieldName) acc[submissionFieldName] = $field.val();
+
+          return acc;
+        }, {});
+
+        $.post('api/auth/signin', submission)
+          .done(function onSuccess (data) {
+            window.location.replace('/');
+          }).fail(function onError (xhr, status, err) {
+            $form.find('input[name="submit"]').after([
+              '<p class="error form-error">',
+              status,
+              '</p>'
+            ].join(''));
+          });
+      });
     });
   }(jQuery));
   </script>

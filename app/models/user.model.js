@@ -44,7 +44,7 @@ UserSchema.pre('save', function hashPasswordForSave (next) {
 var User = mongoose.model('User', UserSchema);
 
 function hashPassword (password, salt) {
-  return password && salt && crypto.pbkdf2Sync(password, new Buffer(salt, 'base64'), 10000, 64).toString('base64');
+  return password && salt && crypto.pbkdf2Sync(password, new Buffer(salt, 'base64'), 10000, 64, 'sha1').toString('base64');
 }
 
 UserSchema.statics.authenticate = function (password, userPassword, userSalt) {

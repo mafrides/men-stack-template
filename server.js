@@ -28,6 +28,9 @@ app.locals.title = config.app.title;
 app.locals.description = config.app.description;
 app.locals.keywords = config.app.keywords;
 
+// fix mongoose promise deprecation warning
+mongoose.Promise = global.Promise;
+
 // Load Models
 fs.readdirSync(path.join(__dirname, 'app/models')).forEach(function loadModel (file) {
   require(path.resolve(path.join('./app/models', file)));
